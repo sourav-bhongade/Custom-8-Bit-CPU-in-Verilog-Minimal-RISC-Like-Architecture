@@ -1,0 +1,422 @@
+$date
+	Wed Jul 16 23:42:08 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module cpu_testbench $end
+$var wire 4 ! pc [3:0] $end
+$var reg 1 " clk $end
+$var reg 1 # reset $end
+$scope module cpu $end
+$var wire 1 " clk $end
+$var wire 1 # reset $end
+$var wire 1 $ zero_flag $end
+$var wire 3 % src [2:0] $end
+$var wire 8 & reg_data2 [7:0] $end
+$var wire 8 ' reg_data1 [7:0] $end
+$var wire 4 ( pc [3:0] $end
+$var wire 3 ) opcode [2:0] $end
+$var wire 8 * instruction [7:0] $end
+$var wire 3 + dest [2:0] $end
+$var wire 8 , alu_result [7:0] $end
+$var reg 1 - jump $end
+$var reg 4 . jump_addr [3:0] $end
+$var reg 3 / write_addr [2:0] $end
+$var reg 8 0 write_data [7:0] $end
+$var reg 1 1 write_en $end
+$scope module ALU $end
+$var wire 8 2 operand2 [7:0] $end
+$var wire 8 3 operand1 [7:0] $end
+$var wire 3 4 opcode [2:0] $end
+$var reg 8 5 result [7:0] $end
+$var reg 1 $ zero_flag $end
+$upscope $end
+$scope module DEC $end
+$var wire 3 6 reg2_or_imm [2:0] $end
+$var wire 3 7 reg1 [2:0] $end
+$var wire 3 8 opcode [2:0] $end
+$var wire 8 9 instruction [7:0] $end
+$upscope $end
+$scope module PC $end
+$var wire 1 " clk $end
+$var wire 1 - jump $end
+$var wire 4 : jump_addr [3:0] $end
+$var wire 1 # reset $end
+$var reg 4 ; pc_out [3:0] $end
+$upscope $end
+$scope module REGFILE $end
+$var wire 1 " clk $end
+$var wire 3 < read_addr1 [2:0] $end
+$var wire 3 = read_addr2 [2:0] $end
+$var wire 8 > read_data1 [7:0] $end
+$var wire 8 ? read_data2 [7:0] $end
+$var wire 3 @ write_addr [2:0] $end
+$var wire 8 A write_data [7:0] $end
+$var wire 1 1 write_en $end
+$var wire 2 B actual_write_addr [1:0] $end
+$var wire 2 C actual_read_addr2 [1:0] $end
+$var wire 2 D actual_read_addr1 [1:0] $end
+$upscope $end
+$scope module ROM $end
+$var wire 4 E addr [3:0] $end
+$var wire 8 F data [7:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+b10101101 F
+b0 E
+b1 D
+b1 C
+b1 B
+bx A
+b1 @
+bx ?
+bx >
+b101 =
+b1 <
+b0 ;
+b0 :
+b10101101 9
+b101 8
+b1 7
+b101 6
+bx 5
+b101 4
+bx 3
+bx 2
+11
+bx 0
+b1 /
+b0 .
+0-
+bx ,
+b1 +
+b10101101 *
+b101 )
+b0 (
+bx '
+bx &
+b101 %
+x$
+1#
+0"
+b0 !
+$end
+#5000
+1"
+#10000
+0"
+0#
+#15000
+b10 B
+b11 C
+b10 D
+b10 /
+b10 @
+b111 %
+b111 6
+b111 =
+b10 +
+b10 7
+b10 <
+bx 0
+bx A
+11
+b10110111 *
+b10110111 9
+b10110111 F
+b1 !
+b1 (
+b1 ;
+b1 E
+1"
+#20000
+0"
+#25000
+b11 B
+b10 C
+b11 D
+b11 /
+b11 @
+b10 %
+b10 6
+b10 =
+b11 +
+b11 7
+b11 <
+b0 )
+b0 4
+b0 8
+bx 0
+bx A
+11
+b11010 *
+b11010 9
+b11010 F
+b10 !
+b10 (
+b10 ;
+b10 E
+1"
+#30000
+0"
+#35000
+bx B
+bx C
+bx D
+b0xx /
+b0xx @
+1$
+b0 ,
+b0 5
+bx %
+bx 6
+bx =
+b0xx +
+b0xx 7
+b0xx <
+bx )
+bx 4
+bx 8
+b0 0
+b0 A
+01
+bx *
+bx 9
+bx F
+b11 !
+b11 (
+b11 ;
+b11 E
+1"
+#40000
+0"
+#45000
+b100 !
+b100 (
+b100 ;
+b100 E
+1"
+#50000
+0"
+#55000
+b101 !
+b101 (
+b101 ;
+b101 E
+1"
+#60000
+0"
+#65000
+b110 !
+b110 (
+b110 ;
+b110 E
+1"
+#70000
+0"
+#75000
+b111 !
+b111 (
+b111 ;
+b111 E
+1"
+#80000
+0"
+#85000
+b1000 !
+b1000 (
+b1000 ;
+b1000 E
+1"
+#90000
+0"
+#95000
+b1001 !
+b1001 (
+b1001 ;
+b1001 E
+1"
+#100000
+0"
+#105000
+b1010 !
+b1010 (
+b1010 ;
+b1010 E
+1"
+#110000
+0"
+#115000
+b1011 !
+b1011 (
+b1011 ;
+b1011 E
+1"
+#120000
+0"
+#125000
+b1100 !
+b1100 (
+b1100 ;
+b1100 E
+1"
+#130000
+0"
+#135000
+b1101 !
+b1101 (
+b1101 ;
+b1101 E
+1"
+#140000
+0"
+#145000
+b1110 !
+b1110 (
+b1110 ;
+b1110 E
+1"
+#150000
+0"
+#155000
+b1111 !
+b1111 (
+b1111 ;
+b1111 E
+1"
+#160000
+0"
+#165000
+b1 B
+b1 C
+b1 D
+bx 0
+bx A
+11
+b1 /
+b1 @
+x$
+bx ,
+bx 5
+b101 %
+b101 6
+b101 =
+b1 +
+b1 7
+b1 <
+b101 )
+b101 4
+b101 8
+b10101101 *
+b10101101 9
+b10101101 F
+b0 !
+b0 (
+b0 ;
+b0 E
+1"
+#170000
+0"
+#175000
+b10 B
+b11 C
+b10 D
+b10 /
+b10 @
+b111 %
+b111 6
+b111 =
+b10 +
+b10 7
+b10 <
+bx 0
+bx A
+11
+b10110111 *
+b10110111 9
+b10110111 F
+b1 !
+b1 (
+b1 ;
+b1 E
+1"
+#180000
+0"
+#185000
+b11 B
+b10 C
+b11 D
+b11 /
+b11 @
+b10 %
+b10 6
+b10 =
+b11 +
+b11 7
+b11 <
+b0 )
+b0 4
+b0 8
+bx 0
+bx A
+11
+b11010 *
+b11010 9
+b11010 F
+b10 !
+b10 (
+b10 ;
+b10 E
+1"
+#190000
+0"
+#195000
+bx B
+bx C
+bx D
+b0xx /
+b0xx @
+1$
+b0 ,
+b0 5
+bx %
+bx 6
+bx =
+b0xx +
+b0xx 7
+b0xx <
+bx )
+bx 4
+bx 8
+b0 0
+b0 A
+01
+bx *
+bx 9
+bx F
+b11 !
+b11 (
+b11 ;
+b11 E
+1"
+#200000
+0"
+#205000
+b100 !
+b100 (
+b100 ;
+b100 E
+1"
+#210000
+0"
