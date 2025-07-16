@@ -28,11 +28,12 @@ module cpu_testbench();
         // Initial reset pulse
         #10 reset = 0;
 
-        // Let CPU run
-        #200;
+        // Let CPU run longer to complete all instructions
+        #150;
 
         // Display final state
         $display("Final PC = %h", pc);
+        $display("R0 = %h", cpu.REGFILE.registers[0]);
         $display("R1 = %h", cpu.REGFILE.registers[1]);
         $display("R2 = %h", cpu.REGFILE.registers[2]);
         $display("R3 = %h", cpu.REGFILE.registers[3]);
