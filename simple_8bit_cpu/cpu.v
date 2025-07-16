@@ -7,7 +7,6 @@ module simple_cpu (
 );
 
 // Signals
-wire [3:0] pc;
 wire [7:0] instruction;
 wire [2:0] opcode;
 wire [2:0] dest;
@@ -51,8 +50,8 @@ register_file REGFILE (
     .write_en(write_en),
     .write_addr(write_addr),
     .write_data(write_data),
-    .read_addr1(dest),
-    .read_addr2(src),
+    .read_addr1((opcode == 3'b000) ? 3'b001 : dest), // For ADD, always read R1 as first operand
+    .read_addr2(src), // Second operand comes from src field
     .read_data1(reg_data1),
     .read_data2(reg_data2)
 );
@@ -104,12 +103,12 @@ always @(*) begin
         end
 
         3'b101: begin // MOV
-            if (dest[2] == 1'b1) begin
-                // MOV immediate: upper dests (R4–R7) → signal imm
-                write_addr = {1'b0, dest[1:0]};  // map R4–R7 to R0–R3
+            if (src[2] == 1'b1) begin
+                // MOV immediate: upper src values (R4–R7) → signal imm
+                write_addr = dest;  // write to actual dest register
                 write_en = 1;
-                write_data = {5'b00000, src};  // zero-extend imm
-                $display("MOV IMM: R%d = #%h", write_addr, write_data);
+                write_data = {5'b00000, src[1:0]};  // zero-extend the 2-bit immediate value
+                $display("MOV IMM: R%d = #%h", dest, write_data);
             end else begin
                 // MOV register to register
                 write_en = 1;
