@@ -8,8 +8,7 @@ module instruction_decoder (
 );
 
 assign opcode        = instruction[7:5];
-assign reg1          = instruction[4:3];     // Destination
-assign reg2_or_imm   = instruction[2:0];     // Source register or immediate
-        // already 3 bits
+assign reg1          = {1'b0, instruction[4:3]};     // Destination (pad to 3 bits)
+assign reg2_or_imm   = instruction[2:0];     // Source register or immediate (3 bits)
 
 endmodule

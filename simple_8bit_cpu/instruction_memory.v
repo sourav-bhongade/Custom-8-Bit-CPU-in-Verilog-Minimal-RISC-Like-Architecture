@@ -8,11 +8,9 @@ module instruction_memory (
     assign data = memory[addr];
 
     initial begin
-memory[0] = 8'hAD;  // MOV R1, #5 → 101 01 101
-memory[1] = 8'hB7;  // MOV R2, #3 → 101 10 111 ← ✅ CHANGED
+memory[0] = 8'hAD;  // MOV R1, #1 → 101 01 101 (dest=R1, src=101, imm value=01)
+memory[1] = 8'hB6;  // MOV R2, #2 → 101 10 110 (dest=R2, src=110, imm value=10)
 memory[2] = 8'h1A;  // ADD R3, R1, R2 → 000 11 010
-
-
 
     end
 endmodule
