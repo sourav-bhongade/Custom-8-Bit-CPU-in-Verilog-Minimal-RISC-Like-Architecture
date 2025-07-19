@@ -19,9 +19,9 @@ wire [1:0] actual_write_addr = write_addr[1:0];
 wire [1:0] actual_read_addr1 = read_addr1[1:0];
 wire [1:0] actual_read_addr2 = read_addr2[1:0];
 
-// Combinational read
-assign read_data1 = registers[actual_read_addr1];
-assign read_data2 = registers[actual_read_addr2];
+// Combinational read with write forwarding
+assign read_data1 = (write_en && (actual_write_addr == actual_read_addr1)) ? write_data : registers[actual_read_addr1];
+assign read_data2 = (write_en && (actual_write_addr == actual_read_addr2)) ? write_data : registers[actual_read_addr2];
 
 // Sequential write
 always @(posedge clk) begin

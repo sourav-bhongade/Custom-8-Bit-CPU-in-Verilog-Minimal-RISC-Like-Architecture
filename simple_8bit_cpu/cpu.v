@@ -71,101 +71,104 @@ always @(posedge clk) begin
         write_en <= 0;
         jump <= 0;
         jump_addr <= 4'b0;
+        write_addr <= 3'b0;
+        write_data <= 8'b0;
     end else begin
+        // Default values
         write_en <= 0;
         write_addr <= dest;
         write_data <= 8'b0;
         jump <= 0;
         jump_addr <= 4'b0;
 
-        case (opcode)
-
-        3'b000: begin // ADD
-            write_en <= 1;
-            write_data <= alu_result;
-            $display("ADD Executed: R1=%h, R2=%h, RESULT=%h, write_en=%b", reg_data1, reg_data2, alu_result, 1'b1);
-            $display("CPU Cycle - PC=%d, Instruction=%h, Opcode=%b, Dest=%b, Src=%b", pc, instruction, opcode, dest, src);
-        end
-
-        3'b001: begin // MUL
-            write_en <= 1;
-            write_data <= alu_result;
-            $display("MUL Executed: R%d = R%d * R%d = %h", dest, dest, src, alu_result);
-        end
-
-        3'b010: begin // AND
-            write_en <= 1;
-            write_data <= alu_result;
-            $display("AND Executed: R%d = R%d & R%d = %h", dest, dest, src, alu_result);
-        end
-
-        3'b011: begin // OR
-            write_en <= 1;
-            write_data <= alu_result;
-            $display("OR Executed: R%d = R%d | R%d = %h", dest, dest, src, alu_result);
-        end
-
-        3'b100: begin // XOR
-            write_en <= 1;
-            write_data <= alu_result;
-            $display("XOR Executed: R%d = R%d ^ R%d = %h", dest, dest, src, alu_result);
-        end
-
-        3'b101: begin // MOV
-            if (src[2] == 1'b1) begin
-                // MOV immediate: upper src values (R4–R7) → signal imm
-                write_addr <= dest;  // write to actual dest register
-                write_en <= 1;
-                write_data <= {5'b00000, src[1:0]};  // zero-extend the 2-bit immediate value
-                $display("MOV IMM: R%d = #%h", dest, {5'b00000, src[1:0]});
-            end else begin
-                // MOV register to register
-                write_en <= 1;
-                write_data <= reg_data2;
-                $display("MOV REG: R%d = R%d = %h", dest, src, reg_data2);
-            end
-        end
-
-        3'b110: begin // CMP
-            // only sets zero_flag
-            write_en <= 0;
-            $display("CMP Executed: R%d - R%d, zero_flag=%b", dest, src, zero_flag);
-        end
-
-        3'b111: begin // COM (bitwise NOT)
-            write_en <= 1;
-            write_data <= alu_result;
-            $display("COM Executed: R%d = ~R%d = %h", dest, dest, alu_result);
-        end
-
-        endcase
-
-        // Handle special jumps
-        if (opcode == 3'b011 && dest == 3'b011) begin // JMP
+        // Check for jump instructions first (special cases with dest=11 AND specific conditions)
+        if (dest == 2'b11 && opcode == 3'b011) begin // JMP: OR with dest=11
             jump <= 1;
-            jump_addr <= src;
+            jump_addr <= src[3:0];
             write_en <= 0;
-            $display("JMP to address %d", src);
-        end 
-        else if (opcode == 3'b100 && dest == 3'b011) begin // JZ
+            $display("JMP to address %d", src[3:0]);
+        end else if (dest == 2'b11 && opcode == 3'b100) begin // JZ: XOR with dest=11  
             if (zero_flag) begin
                 jump <= 1;
-                jump_addr <= src;
+                jump_addr <= src[3:0];
                 write_en <= 0;
-                $display("JZ to address %d (zero_flag=1)", src);
+                $display("JZ to address %d (zero_flag=1)", src[3:0]);
             end else begin
                 $display("JZ not taken (zero_flag=0)");
             end
-        end 
-        else if (opcode == 3'b101 && dest == 3'b011) begin // JNZ
+        end else if (dest == 2'b11 && opcode == 3'b110) begin // JNZ: CMP with dest=11
             if (!zero_flag) begin
                 jump <= 1;
-                jump_addr <= src;
+                jump_addr <= src[3:0];
                 write_en <= 0;
-                $display("JNZ to address %d (zero_flag=0)", src);
+                $display("JNZ to address %d (zero_flag=0)", src[3:0]);
             end else begin
                 $display("JNZ not taken (zero_flag=1)");
             end
+        end else begin
+            // Regular instruction execution for dest=00,01,10
+            case (opcode)
+                3'b000: begin // ADD
+                    write_en <= 1;
+                    write_data <= alu_result;
+                    $display("ADD R%d, R%d → R%d = %h", dest, src, dest, alu_result);
+                end
+
+                3'b001: begin // MUL
+                    write_en <= 1;
+                    write_data <= alu_result;
+                    $display("MUL R%d, R%d → R%d = %h", dest, src, dest, alu_result);
+                end
+
+                3'b010: begin // AND
+                    write_en <= 1;
+                    write_data <= alu_result;
+                    $display("AND R%d, R%d → R%d = %h", dest, src, dest, alu_result);
+                end
+
+                3'b011: begin // OR
+                    write_en <= 1;
+                    write_data <= alu_result;
+                    $display("OR R%d, R%d → R%d = %h", dest, src, dest, alu_result);
+                end
+
+                3'b100: begin // XOR
+                    write_en <= 1;
+                    write_data <= alu_result;
+                    $display("XOR R%d, R%d → R%d = %h", dest, src, dest, alu_result);
+                end
+
+                3'b101: begin // MOV
+                    if (src >= 3'd4) begin
+                        // MOV immediate: src values 4-7 indicate immediate mode
+                        write_en <= 1;
+                        write_data <= {5'b00000, src[2:0] - 3'd4};  // Subtract 4 offset to get actual immediate value
+                        $display("MOV R%d, #%d → R%d = %h", dest, src[2:0] - 3'd4, dest, {5'b00000, src[2:0] - 3'd4});
+                    end else begin
+                        // MOV register to register: src values 0-3 indicate register mode
+                        write_en <= 1;
+                        write_data <= reg_data2;
+                        $display("MOV R%d, R%d → R%d = %h", dest, src[1:0], dest, reg_data2);
+                    end
+                end
+
+                3'b110: begin // CMP
+                    // Compare operation - only sets flags, no write
+                    write_en <= 0;
+                    $display("CMP R%d, R%d → zero_flag = %b", dest, src, zero_flag);
+                end
+
+                3'b111: begin // NOT (bitwise complement)
+                    write_en <= 1;
+                    write_data <= alu_result;
+                    $display("NOT R%d → R%d = %h", dest, dest, alu_result);
+                end
+
+                default: begin
+                    write_en <= 0;
+                    $display("Unknown opcode: %b", opcode);
+                end
+            endcase
         end
     end
 end
