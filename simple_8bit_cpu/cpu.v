@@ -50,8 +50,8 @@ register_file REGFILE (
     .write_en(write_en),
     .write_addr(write_addr),
     .write_data(write_data),
-    .read_addr1((opcode == 3'b000) ? 3'b001 : dest), // For ADD, always read R1 as first operand
-    .read_addr2(src), // Second operand comes from src field
+    .read_addr1(dest), // First operand comes from dest register for all ALU ops
+    .read_addr2(src),  // Second operand comes from src register
     .read_data1(reg_data1),
     .read_data2(reg_data2)
 );
@@ -66,87 +66,106 @@ alu ALU (
 );
 
 // Execution Logic
-always @(*) begin
-    write_en = 0;
-    write_addr = dest;
-    write_data = 8'b0;
-    jump = 0;
-    jump_addr = 4'b0;
+always @(posedge clk) begin
+    if (reset) begin
+        write_en <= 0;
+        jump <= 0;
+        jump_addr <= 4'b0;
+    end else begin
+        write_en <= 0;
+        write_addr <= dest;
+        write_data <= 8'b0;
+        jump <= 0;
+        jump_addr <= 4'b0;
 
-    case (opcode)
+        case (opcode)
 
         3'b000: begin // ADD
-            write_en = 1;
-            write_data = alu_result;
-            $display("ADD Executed: R1=%h, R2=%h, RESULT=%h, write_en=%b", reg_data1, reg_data2, alu_result, write_en);
+            write_en <= 1;
+            write_data <= alu_result;
+            $display("ADD Executed: R1=%h, R2=%h, RESULT=%h, write_en=%b", reg_data1, reg_data2, alu_result, 1'b1);
             $display("CPU Cycle - PC=%d, Instruction=%h, Opcode=%b, Dest=%b, Src=%b", pc, instruction, opcode, dest, src);
         end
 
         3'b001: begin // MUL
-            write_en = 1;
-            write_data = alu_result;
+            write_en <= 1;
+            write_data <= alu_result;
+            $display("MUL Executed: R%d = R%d * R%d = %h", dest, dest, src, alu_result);
         end
 
         3'b010: begin // AND
-            write_en = 1;
-            write_data = alu_result;
+            write_en <= 1;
+            write_data <= alu_result;
+            $display("AND Executed: R%d = R%d & R%d = %h", dest, dest, src, alu_result);
         end
 
         3'b011: begin // OR
-            write_en = 1;
-            write_data = alu_result;
+            write_en <= 1;
+            write_data <= alu_result;
+            $display("OR Executed: R%d = R%d | R%d = %h", dest, dest, src, alu_result);
         end
 
         3'b100: begin // XOR
-            write_en = 1;
-            write_data = alu_result;
+            write_en <= 1;
+            write_data <= alu_result;
+            $display("XOR Executed: R%d = R%d ^ R%d = %h", dest, dest, src, alu_result);
         end
 
         3'b101: begin // MOV
             if (src[2] == 1'b1) begin
                 // MOV immediate: upper src values (R4–R7) → signal imm
-                write_addr = dest;  // write to actual dest register
-                write_en = 1;
-                write_data = {5'b00000, src[1:0]};  // zero-extend the 2-bit immediate value
-                $display("MOV IMM: R%d = #%h", dest, write_data);
+                write_addr <= dest;  // write to actual dest register
+                write_en <= 1;
+                write_data <= {5'b00000, src[1:0]};  // zero-extend the 2-bit immediate value
+                $display("MOV IMM: R%d = #%h", dest, {5'b00000, src[1:0]});
             end else begin
                 // MOV register to register
-                write_en = 1;
-                write_data = reg_data2;
+                write_en <= 1;
+                write_data <= reg_data2;
                 $display("MOV REG: R%d = R%d = %h", dest, src, reg_data2);
             end
         end
 
         3'b110: begin // CMP
             // only sets zero_flag
-            write_en = 0;
+            write_en <= 0;
+            $display("CMP Executed: R%d - R%d, zero_flag=%b", dest, src, zero_flag);
         end
 
         3'b111: begin // COM (bitwise NOT)
-            write_en = 1;
-            write_data = alu_result;
+            write_en <= 1;
+            write_data <= alu_result;
+            $display("COM Executed: R%d = ~R%d = %h", dest, dest, alu_result);
         end
 
-    endcase
+        endcase
 
-    // Handle special jumps
-    if (opcode == 3'b011 && dest == 3'b011) begin // JMP
-        jump = 1;
-        jump_addr = src;
-        write_en = 0;
-    end 
-    else if (opcode == 3'b100 && dest == 3'b011) begin // JZ
-        if (zero_flag) begin
-            jump = 1;
-            jump_addr = src;
-            write_en = 0;
-        end
-    end 
-    else if (opcode == 3'b101 && dest == 3'b011) begin // JNZ
-        if (!zero_flag) begin
-            jump = 1;
-            jump_addr = src;
-            write_en = 0;
+        // Handle special jumps
+        if (opcode == 3'b011 && dest == 3'b011) begin // JMP
+            jump <= 1;
+            jump_addr <= src;
+            write_en <= 0;
+            $display("JMP to address %d", src);
+        end 
+        else if (opcode == 3'b100 && dest == 3'b011) begin // JZ
+            if (zero_flag) begin
+                jump <= 1;
+                jump_addr <= src;
+                write_en <= 0;
+                $display("JZ to address %d (zero_flag=1)", src);
+            end else begin
+                $display("JZ not taken (zero_flag=0)");
+            end
+        end 
+        else if (opcode == 3'b101 && dest == 3'b011) begin // JNZ
+            if (!zero_flag) begin
+                jump <= 1;
+                jump_addr <= src;
+                write_en <= 0;
+                $display("JNZ to address %d (zero_flag=0)", src);
+            end else begin
+                $display("JNZ not taken (zero_flag=1)");
+            end
         end
     end
 end
