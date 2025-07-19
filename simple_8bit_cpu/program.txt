@@ -1,3 +1,25 @@
-MOV R1, #5  
-MOV R2, #10  
-ADD R3, R1, R2  
+// Comprehensive 8-bit CPU Demonstration Program
+// Showcases all instruction types and CPU capabilities
+
+// Phase 1: Load immediate values
+MOV R0, #2      // R0 = 2 (base value)
+MOV R1, #3      // R1 = 3 (multiplier)  
+MOV R2, #0      // R2 = 0 (accumulator)
+MOV R3, #1      // R3 = 1 (test value)
+
+// Phase 2: Arithmetic operations
+ADD R2, R0      // R2 = 0 + 2 = 2
+MUL R2, R1      // R2 = 2 * 3 = 6
+
+// Phase 3: Logical operations
+AND R0, R1      // R0 = 2 & 3 = 2  
+OR R0, R1       // R0 = 2 | 3 = 3
+XOR R1, R0      // R1 = 3 ^ 3 = 0
+
+// Phase 4: Unary operations
+NOT R3          // R3 = ~1 = 0xFE
+
+// Phase 5: Control flow demonstration
+CMP R1, R3      // Compare R1(0) vs R3(0xFE) -> zero_flag = 0
+MOV R0, #3      // Final result
+JMP 0           // Loop back to start (infinite loop demo)
