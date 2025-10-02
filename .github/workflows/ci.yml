@@ -1,0 +1,56 @@
+name: 8-bit CPU CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+    
+    - name: Install iverilog
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y iverilog
+    
+    - name: Run CPU tests
+      run: |
+        cd simple_8bit_cpu
+        chmod +x run_tests.sh
+        ./run_tests.sh
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: simple_8bit_cpu/test_outputs/
+    
+    - name: Generate test report
+      if: always()
+      run: |
+        cd simple_8bit_cpu
+        echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        if [ -f test_outputs/python_simulation.log ]; then
+          echo "### Python Simulation" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -20 test_outputs/python_simulation.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        fi
+        if [ -f test_outputs/simulation.log ]; then
+          echo "### Verilog Simulation" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -20 test_outputs/simulation.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        fi

@@ -50,7 +50,7 @@ register_file REGFILE (
     .write_en(write_en),
     .write_addr(write_addr),
     .write_data(write_data),
-    .read_addr1(dest), // First operand comes from dest register for all ALU ops
+    .read_addr1(dest), // First operand comes from dest register
     .read_addr2(src),  // Second operand comes from src register
     .read_data1(reg_data1),
     .read_data2(reg_data2)
@@ -82,27 +82,31 @@ always @(posedge clk) begin
         jump_addr <= 4'b0;
 
         // Check for jump instructions first (special cases with dest=11 AND specific conditions)
-        if (dest == 2'b11 && opcode == 3'b011) begin // JMP: OR with dest=11
+        if (dest == 3'b011 && opcode == 3'b011) begin // JMP: OR with dest=11
             jump <= 1;
             jump_addr <= src[3:0];
             write_en <= 0;
             $display("JMP to address %d", src[3:0]);
-        end else if (dest == 2'b11 && opcode == 3'b100) begin // JZ: XOR with dest=11  
+        end else if (dest == 3'b011 && opcode == 3'b100) begin // JZ: XOR with dest=11  
             if (zero_flag) begin
                 jump <= 1;
                 jump_addr <= src[3:0];
                 write_en <= 0;
                 $display("JZ to address %d (zero_flag=1)", src[3:0]);
             end else begin
+                jump <= 0;  // Explicitly set jump=0 for PC increment
+                write_en <= 0;
                 $display("JZ not taken (zero_flag=0)");
             end
-        end else if (dest == 2'b11 && opcode == 3'b110) begin // JNZ: CMP with dest=11
+        end else if (dest == 3'b011 && opcode == 3'b110) begin // JNZ: CMP with dest=11
             if (!zero_flag) begin
                 jump <= 1;
                 jump_addr <= src[3:0];
                 write_en <= 0;
                 $display("JNZ to address %d (zero_flag=0)", src[3:0]);
             end else begin
+                jump <= 0;  // Explicitly set jump=0 for PC increment
+                write_en <= 0;
                 $display("JNZ not taken (zero_flag=1)");
             end
         end else begin
