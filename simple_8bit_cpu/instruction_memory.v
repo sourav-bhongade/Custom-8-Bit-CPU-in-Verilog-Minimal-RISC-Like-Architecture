@@ -14,9 +14,9 @@ module instruction_memory (
         memory[ 3] = 8'hBD;
         memory[ 4] = 8'hF8;
         memory[ 5] = 8'hCB;
-        memory[ 6] = 8'hA7;
-        memory[ 7] = 8'h78;
-        memory[ 8] = 8'h00;
+        memory[ 6] = 8'h9B;
+        memory[ 7] = 8'hA7;
+        memory[ 8] = 8'h7B;
         memory[ 9] = 8'h00;
         memory[10] = 8'h00;
         memory[11] = 8'h00;

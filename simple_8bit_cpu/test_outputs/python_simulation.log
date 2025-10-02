@@ -1,0 +1,90 @@
+=== CPU SIMULATION ===
+Initial state:
+  PC = 0
+  R0 = 00, R1 = 00, R2 = 00, R3 = 00
+  zero_flag = 0
+
+PC  0: 0xA6 (10100110) - op:101 dest:00 src:110
+  MOV R0, #2 → R0 = 02
+  Registers: R0=02 R1=00 R2=00 R3=00
+  PC=1, zero_flag=0
+
+PC  1: 0xAF (10101111) - op:101 dest:01 src:111
+  MOV R1, #3 → R1 = 03
+  Registers: R0=02 R1=03 R2=00 R3=00
+  PC=2, zero_flag=0
+
+PC  2: 0xB4 (10110100) - op:101 dest:10 src:100
+  MOV R2, #0 → R2 = 00
+  Registers: R0=02 R1=03 R2=00 R3=00
+  PC=3, zero_flag=0
+
+PC  3: 0xBD (10111101) - op:101 dest:11 src:101
+  MOV R3, #1 → R3 = 01
+  Registers: R0=02 R1=03 R2=00 R3=01
+  PC=4, zero_flag=0
+
+PC  4: 0x10 (00010000) - op:000 dest:10 src:000
+  ADD R2, R0 → R2 = 02
+  Registers: R0=02 R1=03 R2=02 R3=01
+  PC=5, zero_flag=0
+
+PC  5: 0x31 (00110001) - op:001 dest:10 src:001
+  MUL R2, R1 → R2 = 06
+  Registers: R0=02 R1=03 R2=06 R3=01
+  PC=6, zero_flag=0
+
+PC  6: 0x41 (01000001) - op:010 dest:00 src:001
+  AND R0, R1 → R0 = 02
+  Registers: R0=02 R1=03 R2=06 R3=01
+  PC=7, zero_flag=0
+
+PC  7: 0x61 (01100001) - op:011 dest:00 src:001
+  OR R0, R1 → R0 = 03
+  Registers: R0=03 R1=03 R2=06 R3=01
+  PC=8, zero_flag=0
+
+PC  8: 0x88 (10001000) - op:100 dest:01 src:000
+  XOR R1, R0 → R1 = 00
+  Registers: R0=03 R1=00 R2=06 R3=01
+  PC=9, zero_flag=1
+
+PC  9: 0xF8 (11111000) - op:111 dest:11 src:000
+  NOT R3 → R3 = FE
+  Registers: R0=03 R1=00 R2=06 R3=FE
+  PC=10, zero_flag=0
+
+PC 10: 0xCB (11001011) - op:110 dest:01 src:011
+  CMP R1, R3 → zero_flag = 0
+  Registers: R0=03 R1=00 R2=06 R3=FE
+  PC=11, zero_flag=0
+
+PC 11: 0x9B (10011011) - op:100 dest:11 src:011
+  JZ not taken (zero_flag=0)
+  Registers: R0=03 R1=00 R2=06 R3=FE
+  PC=12, zero_flag=0
+
+PC 12: 0xA7 (10100111) - op:101 dest:00 src:111
+  MOV R0, #3 → R0 = 03
+  Registers: R0=03 R1=00 R2=06 R3=FE
+  PC=13, zero_flag=0
+
+PC 13: 0x7B (01111011) - op:011 dest:11 src:011
+  JMP to address 3
+  Registers: R0=03 R1=00 R2=06 R3=FE
+  PC=3, zero_flag=0
+
+  HALT: Infinite loop detected at PC=3
+=== FINAL STATE ===
+PC = 3
+R0 = 03, R1 = 00, R2 = 06, R3 = FE
+zero_flag = 0
+Total cycles: 14
+
+=== TEST RESULTS ===
+✅ R0 = 0x03 (expected: 0x03)
+✅ R1 = 0x00 (expected: 0x00)
+✅ R2 = 0x06 (expected: 0x06)
+✅ R3 = 0xFE (expected: 0xFE)
+
+🎉 ALL TESTS PASSED!

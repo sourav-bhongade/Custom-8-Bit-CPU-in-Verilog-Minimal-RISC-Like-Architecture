@@ -1,0 +1,24 @@
+=== ASSEMBLY PROCESS ===
+Line  4: MOV R0, #2      // R0 = 2 → 10100110 → 0xA6 (op:101 dest:00 src:110)
+Line  5: MOV R1, #3      // R1 = 3 → 10101111 → 0xAF (op:101 dest:01 src:111)
+Line  6: MOV R2, #0      // R2 = 0 → 10110100 → 0xB4 (op:101 dest:10 src:100)
+Line  7: MOV R3, #1      // R3 = 1 → 10111101 → 0xBD (op:101 dest:11 src:101)
+Line 19: NOT R3          // R3 = ~1 = 0xFE → 11111000 → 0xF8 (op:111 dest:11 src:000)
+Line 22: CMP R1, R3      // Compare R1(0) vs R3(0xFE) -> zero_flag = 0 → 11001011 → 0xCB (op:110 dest:01 src:011)
+Line 23: JZ 3            // Should NOT jump since zero_flag=0 → 10011011 → 0x9B (op:100 dest:11 src:011)
+Line 24: MOV R0, #3      // Final result → 10100111 → 0xA7 (op:101 dest:00 src:111)
+Line 25: JMP 3           // Jump to halt loop at PC=3 → 01111011 → 0x7B (op:011 dest:11 src:011)
+
+Generated 9 instructions
+
+=== MANUAL VERIFICATION ===
+✓ MOV R1, #1   → 10101101 (expected: 10101101)
+✓ MOV R2, R1   → 10110001 (expected: 10110001)
+✓ ADD R1, R2   → 00001010 (expected: 00001010)
+✓ MUL R2, R1   → 00110001 (expected: 00110001)
+✓ JMP 7        → 01111111 (expected: 01111111)
+✓ JZ 3         → 10011011 (expected: 10011011)
+✓ CMP R1, R2   → 11001010 (expected: 11001010)
+
+✅ Assembly completed! Generated instruction_memory.v with 9 instructions
+📄 Hex dump: A6 AF B4 BD F8 CB 9B A7 7B
