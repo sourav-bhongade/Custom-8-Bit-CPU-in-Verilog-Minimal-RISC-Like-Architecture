@@ -84,15 +84,15 @@ always @(posedge clk) begin
         // Check for jump instructions first (special cases with dest=11 AND specific conditions)
         if (dest == 3'b011 && opcode == 3'b011) begin // JMP: OR with dest=11
             jump <= 1;
-            jump_addr <= src[3:0];
+            jump_addr <= {1'b0, src[2:0]};  // Pad src to 4 bits
             write_en <= 0;
-            $display("JMP to address %d", src[3:0]);
+            $display("JMP to address %d", {1'b0, src[2:0]});
         end else if (dest == 3'b011 && opcode == 3'b100) begin // JZ: XOR with dest=11  
             if (zero_flag) begin
                 jump <= 1;
-                jump_addr <= src[3:0];
+                jump_addr <= {1'b0, src[2:0]};  // Pad src to 4 bits
                 write_en <= 0;
-                $display("JZ to address %d (zero_flag=1)", src[3:0]);
+                $display("JZ to address %d (zero_flag=1)", {1'b0, src[2:0]});
             end else begin
                 jump <= 0;  // Explicitly set jump=0 for PC increment
                 write_en <= 0;
@@ -101,9 +101,9 @@ always @(posedge clk) begin
         end else if (dest == 3'b011 && opcode == 3'b110) begin // JNZ: CMP with dest=11
             if (!zero_flag) begin
                 jump <= 1;
-                jump_addr <= src[3:0];
+                jump_addr <= {1'b0, src[2:0]};  // Pad src to 4 bits
                 write_en <= 0;
-                $display("JNZ to address %d (zero_flag=0)", src[3:0]);
+                $display("JNZ to address %d (zero_flag=0)", {1'b0, src[2:0]});
             end else begin
                 jump <= 0;  // Explicitly set jump=0 for PC increment
                 write_en <= 0;
